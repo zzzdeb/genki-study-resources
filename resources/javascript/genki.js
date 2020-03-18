@@ -1320,6 +1320,18 @@
         
         // begin the quiz
         Genki.progressQuiz('init');
+        // load shortcuts
+        for (var k = 97; k < 123; k++) {
+          $(document).bind('keydown', String.fromCharCode(k), (function(){
+            var kl = k;
+            return function() {
+              var row = document.querySelector('#quiz-q' + Genki.stats.solved +'>.quiz-multi-row>.quiz-multi-answer[data-option="'+ String.fromCharCode(kl-32) + '"]');
+              if (row) {
+                row.click();
+              }
+             }
+          })() );
+        }
       }
       
       
@@ -2386,6 +2398,12 @@
 
   // initial setup
   Genki.init();
+  $(document).bind('keydown', 'n', function(){
+    document.querySelector('.button.next-ex').click();
+  })
+  $(document).bind('keydown', 'p', function(){
+    document.querySelector('.button.prev-ex').click();
+  })
 }(window, document));
 
 function drop(el, target, source) {
