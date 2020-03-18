@@ -59,6 +59,8 @@
       index : 0, // index where active.exercise is located
       path : window.location.pathname.replace(/.*?\/lessons\/(.*?\/.*?)\/.*/g, '$1'), // current exercise path
     },
+
+    clicked : null,
     
     // exercise list
     exercises : [
@@ -1437,31 +1439,35 @@
           });
         }
 
-        // check if the answer is correct before dropping the element
-        drake.on('drop', function (el, target, source) {
-          if (Genki.isTouch) document.body.style.overflow = ''; // restore overflow
-          
-          if (target.dataset.text) { // makes sure the element is a drop zone (data-text == data-answer)
-
-            // if the answer is wrong we'll send the item back to the answer list
-            if (el.dataset.answer != target.dataset.text) {
-              document.getElementById('answer-list').appendChild(el);
-
-              // global mistakes are incremented along with mistakes specific to problems
-              target.dataset.mistakes = ++target.dataset.mistakes;
-              ++Genki.stats.mistakes;
-
-            } else {
-              target.className += ' answer-correct';
-
-              // when all problems have been solved..
-              // stop the timer, show the score, and congratulate the student
-              if (++Genki.stats.solved == Genki.stats.problems) {
-                Genki.endQuiz();
+        var list = drake.containers[0].children;
+        for (var i = 0; i < list.length; i++) {
+          list[i].addEventListener('click', function(){
+              var clicked = document.querySelector('.click-selected');
+              if (clicked) {
+                clicked.classList.remove('click-selected');
               }
+              this.classList.add('click-selected');
+          });
+        }
+
+        var quizitems = document.querySelectorAll('.quiz-answer-zone')
+        for (var i = 0, len = quizitems.length; i < len; i++) {
+          quizitems[i].addEventListener('click', function(){
+            // drake.start()
+            var el = document.querySelector('.click-selected');
+            if (el) {
+              drake.start(el);
+              el.classList.remove('click-selected');
+              this.appendChild(el);
+              drop(el, this);
+              drake.end();
             }
-          }
-        });
+            // drake.end()
+          })
+        }
+
+        // check if the answer is correct before dropping the element
+        drake.on('drop', drop);
 
         Genki.drake = drake;
       }
@@ -2381,3 +2387,28 @@
   // initial setup
   Genki.init();
 }(window, document));
+
+function drop(el, target, source) {
+  if (Genki.isTouch) document.body.style.overflow = ''; // restore overflow
+  
+  if (target.dataset.text) { // makes sure the element is a drop zone (data-text == data-answer)
+
+    // if the answer is wrong we'll send the item back to the answer list
+    if (el.dataset.answer != target.dataset.text) {
+      document.getElementById('answer-list').appendChild(el);
+
+      // global mistakes are incremented along with mistakes specific to problems
+      target.dataset.mistakes = ++target.dataset.mistakes;
+      ++Genki.stats.mistakes;
+
+    } else {
+      target.className += ' answer-correct';
+
+      // when all problems have been solved..
+      // stop the timer, show the score, and congratulate the student
+      if (++Genki.stats.solved == Genki.stats.problems) {
+        Genki.endQuiz();
+      }
+    }
+  }
+}
