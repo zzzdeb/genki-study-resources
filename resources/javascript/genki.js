@@ -1320,6 +1320,18 @@
         
         // begin the quiz
         Genki.progressQuiz('init');
+        // load shortcuts
+        for (var k = 97; k < 123; k++) {
+          $(document).bind('keydown', String.fromCharCode(k), (function(){
+            var kl = k;
+            return function() {
+              var row = document.querySelector('#quiz-q' + Genki.stats.solved +'>.quiz-multi-row>.quiz-multi-answer[data-option="'+ String.fromCharCode(kl-32) + '"]');
+              if (row) {
+                row.click();
+              }
+             }
+          })() );
+        }
       }
       
       
@@ -1450,17 +1462,16 @@
           });
         }
 
-        var quizitems = document.querySelectorAll('.quiz-item-row')
+        var quizitems = document.querySelectorAll('.quiz-answer-zone')
         for (var i = 0, len = quizitems.length; i < len; i++) {
           quizitems[i].addEventListener('click', function(){
             // drake.start()
             var el = document.querySelector('.click-selected');
             if (el) {
-              var answerzone = this.querySelector('.quiz-answer-zone');
               drake.start(el);
               el.classList.remove('click-selected');
-              answerzone.appendChild(el);
-              drop(el, answerzone);
+              this.appendChild(el);
+              drop(el, this);
               drake.end();
             }
             // drake.end()
