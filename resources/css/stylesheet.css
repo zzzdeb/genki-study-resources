@@ -595,6 +595,10 @@ footer li:first-child:before { display:none; }
   min-width:25px;
   white-space:nowrap;
 }
+
+.click-selected {
+  border:1px solid #F00;
+}
 #answer-list .quiz-item, .quiz-item.gu-mirror { cursor:move; }
 
 #quiz-info {
