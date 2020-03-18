@@ -1436,7 +1436,7 @@
             return el.classList.contains('quiz-answer-zone');
           }
         });
-        
+
         // hide overflow during drag for touch screens
         if (Genki.isTouch) {
           drake.on('drag', function () {
@@ -1476,6 +1476,31 @@
             }
             // drake.end()
           })
+        }
+
+        var shortcutitems = document.querySelectorAll('#answer-list>.quiz-item, .quiz-answer-zone')
+        for (var i = 0, len = shortcutitems.length; i < len; i++) {
+          var k = 65 + (i+32)%58
+          shortcutitems[i].setAttribute('shortcutkey', String.fromCharCode(k))
+        }
+
+        for (var k = 65; k < Math.max(123, 65+shortcutitems.length); k++) {
+          var kstr = ''
+          if (k < 91) {
+            kstr = 'shift+'
+          }
+          kstr += String.fromCharCode(k)
+
+          $(document).bind('keydown', kstr, (function(){
+            var kl = k;
+            return function() {
+              var item = document.querySelector('#answer-list>.quiz-item[shortcutkey="'+String.fromCharCode(kl)+'"], .quiz-answer-zone[shortcutkey="'+String.fromCharCode(kl)+'"]')
+              console.log(item)
+              if (item) {
+                item.click();
+              }
+             }
+          })() );
         }
 
         // check if the answer is correct before dropping the element
@@ -2398,10 +2423,10 @@
 
   // initial setup
   Genki.init();
-  $(document).bind('keydown', 'n', function(){
+  $(document).bind('keydown', 'Right', function(){
     document.querySelector('.button.next-ex').click();
   })
-  $(document).bind('keydown', 'p', function(){
+  $(document).bind('keydown', 'Left', function(){
     document.querySelector('.button.prev-ex').click();
   })
 }(window, document));
@@ -2421,7 +2446,8 @@ function drop(el, target, source) {
 
     } else {
       target.className += ' answer-correct';
-
+      target.removeAttribute('shortcutkey');
+      el.removeAttribute('shortcutkey');
       // when all problems have been solved..
       // stop the timer, show the score, and congratulate the student
       if (++Genki.stats.solved == Genki.stats.problems) {

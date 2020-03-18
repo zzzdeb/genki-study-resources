@@ -599,6 +599,11 @@ footer li:first-child:before { display:none; }
 .click-selected {
   border:1px solid #F00;
 }
+
+[shortcutkey]::before {
+    content: attr(shortcutkey) ": ";
+}
+
 #answer-list .quiz-item, .quiz-item.gu-mirror { cursor:move; }
 
 #quiz-info {
